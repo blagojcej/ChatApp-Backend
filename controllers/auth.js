@@ -1,9 +1,15 @@
 const Joi = require('joi');
 const HttpStatus = require('http-status-codes');
 const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
-const User = require('../models/userModels');
+//Load User Model
+// const User = require('../models/userModels');
+require('../models/userModels');
+const User = mongoose.model('User');
 const Helpers = require('../Helpers/helpers');
+const dbConfig = require('../config/secrets');
 
 module.exports = {
     async CreateUser(req, res) {
@@ -29,6 +35,16 @@ module.exports = {
         //Check email in database
         const userEmail = await User.findOne({
             email: Helpers.lowerCase(req.body.email)
+        }, (err, user) => {
+            if (user) {
+                return res.status(HttpStatus.CONFLICT).json({
+                    message: 'Email already exists'
+                });
+            }
+        });
+        /*
+        const userEmail = await User.findOne({
+            email: Helpers.lowerCase(req.body.email)
         });
         //If email exists
         if (userEmail) {
@@ -36,8 +52,19 @@ module.exports = {
                 message: 'Email already exists'
             });
         }
+        */
 
         //Check username in database
+        const userName = await User.findOne({
+            username: Helpers.firstUpper(req.body.username)
+        }, (err, user) => {
+            if (user) {
+                return res.status(HttpStatus.CONFLICT).json({
+                    message: 'Username already exists'
+                });
+            }
+        });
+        /*
         const userName = await User.findOne({
             username: Helpers.firstUpper(req.body.username)
         });
@@ -47,6 +74,7 @@ module.exports = {
                 message: 'Username already exists'
             });
         }
+        */
 
         return bcrypt.hash(value.password, 10, (err, hash) => {
             if (err) {
@@ -63,9 +91,16 @@ module.exports = {
 
             User.create(body)
                 .then((user) => {
-                    return res.status(HttpStatus.CREATED).json({
+                    const token = jwt.sign({
+                        data: user
+                    }, dbConfig.secret, {
+                        expiresIn: 120
+                    });
+                    res.cookie('auth', token);
+                    res.status(HttpStatus.CREATED).json({
                             message: 'User created successfully',
-                            user
+                            user,
+                            token
                         })
                         .catch((err) => {
                             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
