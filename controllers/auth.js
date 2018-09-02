@@ -28,20 +28,40 @@ module.exports = {
         //If is an error return bad request
         if (error && error.details) {
             return res.status(HttpStatus.BAD_REQUEST).json({
-                message: error.details
+                msg: error.details
             });
         }
 
         //Check email in database
+        await User.findOne({
+                email: Helpers.lowerCase(req.body.email)
+            })
+            .then(user => {
+                return res.status(HttpStatus.CONFLICT).json({
+                    message: 'Email already exists'
+                });
+            })
+            .catch(err => {
+                console.log(err);
+                return res.status(HttpStatus.CONFLICT).json({
+                    message: 'Email already exists'
+                });
+            });
+        /*
         const userEmail = await User.findOne({
             email: Helpers.lowerCase(req.body.email)
         }, (err, user) => {
+            if (err) {
+                console.log(err);
+            }
+
             if (user) {
                 return res.status(HttpStatus.CONFLICT).json({
                     message: 'Email already exists'
                 });
             }
         });
+        */
         /*
         const userEmail = await User.findOne({
             email: Helpers.lowerCase(req.body.email)
@@ -55,15 +75,35 @@ module.exports = {
         */
 
         //Check username in database
+        await User.findOne({
+                username: Helpers.firstUpper(req.body.username)
+            })
+            .then(user => {
+                return res.status(HttpStatus.CONFLICT).json({
+                    message: 'Username already exists'
+                });
+            })
+            .catch(err => {
+                console.log(err);
+                return res.status(HttpStatus.CONFLICT).json({
+                    message: 'Username already exists'
+                });
+            });
+        /*
         const userName = await User.findOne({
             username: Helpers.firstUpper(req.body.username)
         }, (err, user) => {
+            if (err) {
+                console.log(err);
+            }
+
             if (user) {
                 return res.status(HttpStatus.CONFLICT).json({
                     message: 'Username already exists'
                 });
             }
         });
+        */
         /*
         const userName = await User.findOne({
             username: Helpers.firstUpper(req.body.username)
