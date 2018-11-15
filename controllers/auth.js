@@ -5,9 +5,9 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
 //Load User Model
-// const User = require('../models/userModels');
-require('../models/userModels');
-const User = mongoose.model('User');
+const User = require('../models/userModels');
+// require('../models/userModels');
+// const User = mongoose.model('User');
 const Helpers = require('../Helpers/helpers');
 const dbConfig = require('../config/secrets');
 
@@ -33,20 +33,21 @@ module.exports = {
         }
 
         //Check email in database
-        await User.findOne({
-                email: Helpers.lowerCase(req.body.email)
-            })
-            .then(user => {
-                return res.status(HttpStatus.CONFLICT).json({
-                    message: 'Email already exists'
-                });
-            })
-            .catch(err => {
-                console.log(err);
-                return res.status(HttpStatus.CONFLICT).json({
-                    message: 'Email already exists'
-                });
-            });
+        //    await User.findOne({
+        //             email: Helpers.lowerCase(req.body.email)
+        //         })
+        //         .then(user => {
+        //             return res.status(HttpStatus.CONFLICT).json({
+        //                 message: 'Email already exists'
+        //             });
+        //         })
+        //         .catch(err => {
+        //             console.log(err);
+        //             return res.status(HttpStatus.CONFLICT).json({
+        //                 message: 'Email already exists'
+        //             });
+        //         });
+        
         /*
         const userEmail = await User.findOne({
             email: Helpers.lowerCase(req.body.email)
@@ -62,7 +63,8 @@ module.exports = {
             }
         });
         */
-        /*
+        
+        
         const userEmail = await User.findOne({
             email: Helpers.lowerCase(req.body.email)
         });
@@ -72,7 +74,7 @@ module.exports = {
                 message: 'Email already exists'
             });
         }
-        */
+        
 
         //Check username in database
         await User.findOne({
