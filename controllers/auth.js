@@ -77,20 +77,21 @@ module.exports = {
         
 
         //Check username in database
-        await User.findOne({
-                username: Helpers.firstUpper(req.body.username)
-            })
-            .then(user => {
-                return res.status(HttpStatus.CONFLICT).json({
-                    message: 'Username already exists'
-                });
-            })
-            .catch(err => {
-                console.log(err);
-                return res.status(HttpStatus.CONFLICT).json({
-                    message: 'Username already exists'
-                });
-            });
+        // await User.findOne({
+        //         username: Helpers.firstUpper(req.body.username)
+        //     })
+        //     .then(user => {
+        //         return res.status(HttpStatus.CONFLICT).json({
+        //             message: 'Username already exists'
+        //         });
+        //     })
+        //     .catch(err => {
+        //         console.log(err);
+        //         return res.status(HttpStatus.CONFLICT).json({
+        //             message: 'Username already exists'
+        //         });
+        //     });
+
         /*
         const userName = await User.findOne({
             username: Helpers.firstUpper(req.body.username)
@@ -106,7 +107,8 @@ module.exports = {
             }
         });
         */
-        /*
+
+        
         const userName = await User.findOne({
             username: Helpers.firstUpper(req.body.username)
         });
@@ -116,7 +118,7 @@ module.exports = {
                 message: 'Username already exists'
             });
         }
-        */
+        
 
         return bcrypt.hash(value.password, 10, (err, hash) => {
             if (err) {
