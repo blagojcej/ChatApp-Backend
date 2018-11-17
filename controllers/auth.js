@@ -32,39 +32,7 @@ module.exports = {
             });
         }
 
-        //Check email in database
-        //    await User.findOne({
-        //             email: Helpers.lowerCase(req.body.email)
-        //         })
-        //         .then(user => {
-        //             return res.status(HttpStatus.CONFLICT).json({
-        //                 message: 'Email already exists'
-        //             });
-        //         })
-        //         .catch(err => {
-        //             console.log(err);
-        //             return res.status(HttpStatus.CONFLICT).json({
-        //                 message: 'Email already exists'
-        //             });
-        //         });
-        
-        /*
-        const userEmail = await User.findOne({
-            email: Helpers.lowerCase(req.body.email)
-        }, (err, user) => {
-            if (err) {
-                console.log(err);
-            }
-
-            if (user) {
-                return res.status(HttpStatus.CONFLICT).json({
-                    message: 'Email already exists'
-                });
-            }
-        });
-        */
-        
-        
+        //Check email in database          
         const userEmail = await User.findOne({
             email: Helpers.lowerCase(req.body.email)
         });
@@ -74,41 +42,9 @@ module.exports = {
                 message: 'Email already exists'
             });
         }
-        
 
-        //Check username in database
-        // await User.findOne({
-        //         username: Helpers.firstUpper(req.body.username)
-        //     })
-        //     .then(user => {
-        //         return res.status(HttpStatus.CONFLICT).json({
-        //             message: 'Username already exists'
-        //         });
-        //     })
-        //     .catch(err => {
-        //         console.log(err);
-        //         return res.status(HttpStatus.CONFLICT).json({
-        //             message: 'Username already exists'
-        //         });
-        //     });
 
-        /*
-        const userName = await User.findOne({
-            username: Helpers.firstUpper(req.body.username)
-        }, (err, user) => {
-            if (err) {
-                console.log(err);
-            }
-
-            if (user) {
-                return res.status(HttpStatus.CONFLICT).json({
-                    message: 'Username already exists'
-                });
-            }
-        });
-        */
-
-        
+        //Check username in database        
         const userName = await User.findOne({
             username: Helpers.firstUpper(req.body.username)
         });
@@ -118,7 +54,7 @@ module.exports = {
                 message: 'Username already exists'
             });
         }
-        
+
 
         return bcrypt.hash(value.password, 10, (err, hash) => {
             if (err) {
@@ -138,14 +74,14 @@ module.exports = {
                     const token = jwt.sign({
                         data: user
                     }, dbConfig.secret, {
-                        expiresIn: 120
-                    });
+                            expiresIn: 120
+                        });
                     res.cookie('auth', token);
                     res.status(HttpStatus.CREATED).json({
-                            message: 'User created successfully',
-                            user,
-                            token
-                        })
+                        message: 'User created successfully',
+                        user,
+                        token
+                    })
                         .catch((err) => {
                             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                                 message: 'Error occured'
@@ -153,5 +89,59 @@ module.exports = {
                         });
                 });
         });
+    },
+
+    async LoginUser(req, res) {
+        // console.log(req.body);
+        if (!req.body.username || !req.body.password) {
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                message: 'No mepty fields allowed'
+            });
+        }
+
+        // Find user by username
+        await User.findOne({ username: Helpers.firstUpper(req.body.username) })
+            .then(user => {
+                // console.log(user);
+
+                // If user is not found
+                if (!user) {
+                    return res.status(HttpStatus.NOT_FOUND).json({
+                        message: 'Username not found'
+                    });
+                }
+
+                // compare entered password with one stored in database
+                return bcrypt.compare(req.body.password, user.password)
+                    .then((result) => {
+                        // console.log(result);
+
+                        // If password doesn't match
+                        if (!result) {
+                            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                                message: 'Password is incorrect'
+                            });
+                        }
+
+                        // If password match
+                        const token = jwt.sign({ data: user }, dbConfig.secret, {
+                            expiresIn: 10000
+                        });
+
+                        res.cookie('auth', token);
+                        return res.status(HttpStatus.OK).json({
+                            message: 'Login successful',
+                            user,
+                            token
+                        });
+                    })
+            })
+            .catch(err => {
+                // console.log(err);
+
+                return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                    message: 'Error occured'
+                });
+            })
     }
 }
