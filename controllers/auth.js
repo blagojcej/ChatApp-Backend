@@ -125,7 +125,7 @@ module.exports = {
 
                         // If password match
                         const token = jwt.sign({ data: user }, dbConfig.secret, {
-                            expiresIn: '1h'
+                            expiresIn: '120'
                         });
 
                         res.cookie('auth', token);
