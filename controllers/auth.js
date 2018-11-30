@@ -74,14 +74,14 @@ module.exports = {
                     const token = jwt.sign({
                         data: user
                     }, dbConfig.secret, {
-                            expiresIn: '1h'
-                        });
+                        expiresIn: '1h'
+                    });
                     res.cookie('auth', token);
                     res.status(HttpStatus.CREATED).json({
-                        message: 'User created successfully',
-                        user,
-                        token
-                    })
+                            message: 'User created successfully',
+                            user,
+                            token
+                        })
                         .catch((err) => {
                             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                                 message: 'Error occured'
@@ -100,7 +100,9 @@ module.exports = {
         }
 
         // Find user by username
-        await User.findOne({ username: Helpers.firstUpper(req.body.username) })
+        await User.findOne({
+                username: Helpers.firstUpper(req.body.username)
+            })
             .then(user => {
                 // console.log(user);
 
@@ -124,8 +126,10 @@ module.exports = {
                         }
 
                         // If password match
-                        const token = jwt.sign({ data: user }, dbConfig.secret, {
-                            expiresIn: '120'
+                        const token = jwt.sign({
+                            data: user
+                        }, dbConfig.secret, {
+                            expiresIn: '1h'
                         });
 
                         res.cookie('auth', token);
