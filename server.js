@@ -12,8 +12,8 @@ app.use(cors());
 const dbConfig = require('./config/secrets');
 
 // Integrate server with Socket.io
-const server=require('http').createServer(app);
-const io=require('socket.io').listen(server);
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -38,6 +38,8 @@ mongoose.Promise = global.Promise;
 mongoose.connect(dbConfig.url, {
     useNewUrlParser: true
 });
+
+require('./socket/streams')(io);
 
 const auth = require('./routes/authRoutes');
 const posts = require('./routes/postRoutes');
