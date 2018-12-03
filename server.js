@@ -11,6 +11,10 @@ app.use(cors());
 //Import secrets.js
 const dbConfig = require('./config/secrets');
 
+// Integrate server with Socket.io
+const server=require('http').createServer(app);
+const io=require('socket.io').listen(server);
+
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Credentials", "true");
@@ -41,6 +45,9 @@ const posts = require('./routes/postRoutes');
 app.use('/api/chatapp', auth);
 app.use('/api/chatapp', posts)
 
-app.listen(3000, () => {
+// app.listen(3000, () => {
+//     console.log('Running on port 3000');
+// });
+server.listen(3000, () => {
     console.log('Running on port 3000');
 });

@@ -32,7 +32,7 @@ const postSchema = mongoose.Schema({
         }
     }],
     totalLikes: {
-        type: number,
+        type: Number,
         default: 0
     },
     likes: [
@@ -46,4 +46,4 @@ const postSchema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Post', postMessage);
+module.exports = mongoose.model('Post', postSchema);
