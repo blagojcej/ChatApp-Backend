@@ -61,7 +61,36 @@ module.exports = {
             return res.status(HttpStatus.OK).json({ message: 'All posts', posts });
         } catch (err) {
             console.log(err);
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });  
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
         }
+    },
+
+    async AddLike(req, res) {
+        const postId = req.body._id;
+        await Post.update({
+            // Find post by id and check if user already liked
+            _id: postId,
+            //  $ne : not equal
+            'likes.username': { $ne: req.user.username }
+        }, {
+            // $push: update record
+                $push: {
+                    likes: {
+                        // Set the username who is added like
+                        username: req.user.username
+                    }
+                },
+                // $inc: increment value
+                $inc: {
+                    // Increment likes
+                    totalLikes: 1
+                }
+            })
+            .then(() => {
+                res.status(HttpStatus.OK).json({ message: 'You liked the post' });
+            })
+            .catch(err => {
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+            });
     }
 }
