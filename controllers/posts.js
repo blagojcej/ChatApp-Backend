@@ -73,7 +73,7 @@ module.exports = {
             //  $ne : not equal
             'likes.username': { $ne: req.user.username }
         }, {
-            // $push: update record
+                // $push: update record
                 $push: {
                     likes: {
                         // Set the username who is added like
@@ -92,5 +92,47 @@ module.exports = {
             .catch(err => {
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
             });
+    },
+
+
+    async AddComment(req, res) {
+
+        // Check for empty fields
+
+        // console.log(req.body);
+        const postId = req.body.postId;
+        await Post.update({
+            // Find post by id and check if user already liked
+            _id: postId
+        }, {
+                // $push: update record
+                $push: {
+                    comments: {
+                        userId: req.user._id,
+                        // Set the username who is added like
+                        username: req.user.username,
+                        comment: req.body.comment,
+                        createdAt: new Date()
+                    }
+                }
+            })
+            .then(() => {
+                res.status(HttpStatus.OK).json({ message: 'Comment added to post' });
+            })
+            .catch(err => {
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error occured' });
+            });
+    },
+
+    async GetPost(req, res) {
+        await Post.findOne({ _id: req.params.id })
+            .populate('user')
+            .populate('comments.userId')
+            .then((post) => {
+                res.status(HttpStatus.OK).json({ message: 'Post found', post });
+            })
+            .catch(err => {
+                res.status(HttpStatus.NOT_FOUND).json({ message: 'Post not found' });
+            })
     }
 }
