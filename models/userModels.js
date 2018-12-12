@@ -22,7 +22,13 @@ const userSchema = mongoose.Schema({
             type: Date,
             default: Date.now()
         }
-    }]
+    }],
+    following: [
+        { userFollowed: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } }
+    ],
+    followers: [
+        { follower: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } }
+    ]
 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -2,9 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const UserCtrl = require('../controllers/users');
+const FriendCtrl = require('../controllers/friends');
 const AuthHelper = require('../Helpers/AuthHelper');
 
-router.get('/users', AuthHelper.VerifyToken, UserCtrl.GetAllUsers);
+router.post('/follow-user', AuthHelper.VerifyToken, FriendCtrl.FollowUser);
 
 module.exports = router;
