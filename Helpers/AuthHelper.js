@@ -14,7 +14,7 @@ module.exports = {
         //search in the cookies value auder 'auth' key, we're setting this value under 'auth' key in controllers/auth.js
         const token = req.cookies.auth || req.headers.authorization.split(' ')[1];        
         // console.log(req.headers);
-        console.log(token);
+        // console.log(token);
 
         if (!token) {
             return res.status(HttpStatus.FORBIDDEN).json({ message: 'No token provided' });
