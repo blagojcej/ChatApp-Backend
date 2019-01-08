@@ -67,14 +67,11 @@ const userSchema = mongoose.Schema({
         }
     }],
     // With which user we have conversations
-    chatList: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
+    chatList: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Message'
-        },
+            receiverId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            msgId: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' }
+        }
     ]
 });
 
